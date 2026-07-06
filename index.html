@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>留学时光 · 一年的记忆</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!--
+  说明（不显示在页面上）：
+  1. 地图用的是真实底图（Leaflet + CartoDB 浅色地图），缩放/拖动都是真实地理位置。
+  2. 点击地图上的标记，会跳转到对应地点的独立页面（比如 paris.html），
+     不再是浮窗弹出——每个地点都是一个可以单独打开/分享的真实页面。
+  3. 城市数据在下面 <script> 的 locations 数组里，每项是 {id, lat, lng, label}。
+     id 对应同目录下的 "<id>.html" 详情页文件名。
+  4. 每个详情页（如 paris.html）里可以直接改标题、引言、正文文字，
+     图片放在 photos/<地点>/ 文件夹里，用 <img src="..."> 引用。
+  5. 所有页面共用 style.css 这个样式文件，改一处，全站风格一起变。
+-->
+
+<header class="cover">
+  <div class="eyebrow">A Year Abroad</div>
+  <h1>看世界的<br><em>这一年</em></h1>
+  <div class="meta">2025.09.21 — 2026.07.26</div>
+</header>
+
+<section class="map-section">
+  <div class="eyebrow">Route</div>
+  <h2>足迹地图</h2>
+  <div class="hint">点击地图上的标记，打开对应地点的页面（可拖动 / 缩放）</div>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+  </div>
+</section>
+
+<section class="closing" id="closing">
+  <h2>Tailwinds and happy ends, as always.</h2>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // 真实经纬度坐标，可按实际去过的城市增删/调整
+  const locations = [
+    { id:"paris",      lat:48.8566, lng:2.3522,  label:"巴黎" },
+    { id:"iceland",    lat:64.1466, lng:-21.9426, label:"雷克雅未克" },
+    { id:"edinburgh",  lat:55.9533, lng:-3.1883, label:"爱丁堡" },
+    { id:"bath",       lat:51.3811, lng:-2.3590, label:"巴斯" },
+    { id:"cambridge",  lat:52.2053, lng:0.1218,  label:"剑桥" },
+    { id:"morocco",    lat:31.6295, lng:-7.9811, label:"马拉喀什" },
+    { id:"hungary",    lat:47.4979, lng:19.0402, label:"布达佩斯" },
+    { id:"santorini",  lat:36.3932, lng:25.4615, label:"圣托里尼" },
+    { id:"piraeus",    lat:37.9475, lng:23.6360, label:"比雷埃夫斯" },
+    { id:"katakolon",  lat:37.6500, lng:21.3167, label:"卡塔科隆" },
+    { id:"corfu",      lat:39.6243, lng:19.9217, label:"科孚岛" },
+    { id:"barcelona",  lat:41.3851, lng:2.1734,  label:"巴塞罗那" },
+    { id:"seville",    lat:37.3891, lng:-5.9845, label:"塞维利亚" },
+    { id:"austria",    lat:48.2082, lng:16.3738, label:"奥地利" },
+    { id:"czech",      lat:50.0755, lng:14.4378, label:"捷克" },
+    { id:"venice",     lat:45.4408, lng:12.3155, label:"威尼斯" },
+    { id:"florence",   lat:43.7696, lng:11.2558, label:"佛罗伦萨" },
+    { id:"rome",       lat:41.9028, lng:12.4964, label:"罗马" },
+    { id:"portugal",   lat:38.7223, lng:-9.1393, label:"里斯本" },
+    { id:"london",     lat:51.5074, lng:-0.1278, label:"伦敦" }
+  ];
+
+  const map = L.map('map', { scrollWheelZoom:false, zoomControl:true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 18
+  }).addTo(map);
+
+  const markers = [];
+  locations.forEach(loc => {
+    const icon = L.divIcon({
+      className: '',
+      html: '<div class="map-pin"><span class="ring"></span><span class="dot"></span></div>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+    const marker = L.marker([loc.lat, loc.lng], { icon }).addTo(map);
+    marker.bindTooltip(loc.label, { permanent:true, direction:'top', offset:[0,-8], className:'city-tooltip' });
+    marker.on('click', () => { window.location.href = loc.id + '.html'; });
+    markers.push(marker);
+  });
+
+  const group = L.featureGroup(markers);
+  map.fitBounds(group.getBounds(), { padding:[36,36] });
+</script>
+
+</body>
+</html>
